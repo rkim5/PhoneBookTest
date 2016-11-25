@@ -12,10 +12,8 @@ import java.util.Scanner;
 
 public class PhonebookGUI {
 
-	Connection conn = sqliteConnection.dbConnector(); // creating connection to
-														// database using
-														// sqliteConnection
-														// class
+	// creating connection to database using sqliteConnection class
+	Connection conn = sqliteConnection.dbConnector(); 
 
 	private JFrame frame;
 	private JTable table;
@@ -43,7 +41,7 @@ public class PhonebookGUI {
 		initialize();
 	}
 
-	// Method used to refresh JTable after a change
+	// Method used to refresh JTable after a change like the ADD or CHANGE or REMOVE buttons
 	public void refreshTable(){
 		try(PreparedStatement pst = conn.prepareStatement("SELECT * FROM data ORDER BY First")){
 			ResultSet rs = pst.executeQuery();
@@ -58,6 +56,7 @@ public class PhonebookGUI {
 	 */
 	private void initialize() {
 		
+		// this creates a new database if an existing one is not found like when first opening the jar file
 		String start = "CREATE TABLE IF NOT EXISTS 'data' ('First' TEXT DEFAULT (null) ,'Last' TEXT DEFAULT (null) ,'Number' INTEGER DEFAULT (null) )";
 		PreparedStatement create;
 		try {
@@ -75,9 +74,13 @@ public class PhonebookGUI {
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.NORTH);
 		
+		// this is the search box on the top of the frame
 		JTextField textField = new JTextField(10);
 		panel_1.add(textField);
 		
+		// action for the search box
+		// CURRENTLY ONLY WORKS WITH FIRST NAMES
+		// Searched for name has to be an exact match!
 		JButton btnNewButton = new JButton("Search");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {	
@@ -93,6 +96,7 @@ public class PhonebookGUI {
 
 // RESET BUTTON	
 		
+		// meant to be used after a search to have the full list of names show up again
 		JButton btnReset = new JButton("Reset");
 		btnReset.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent a) {	
@@ -102,7 +106,7 @@ public class PhonebookGUI {
 		panel_1.add(btnReset);
 		
 //End of panel_1
-//Need rs2xml.jar for this part
+//Need rs2xml.jar for this part, it's in the lib folder
 		
 		JPanel panel = new JPanel();	//JPanel for the JTable in the center
 		panel.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -129,7 +133,7 @@ public class PhonebookGUI {
 		frame.getContentPane().add(panel_3, BorderLayout.SOUTH);
 		
 // ADD BUTTON
-		
+		// KNOWN PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
 		JButton btnNewButton_2 = new JButton("Add");
 		panel_3.add(btnNewButton_2);
 		btnNewButton_2.addActionListener(new ActionListener(){
@@ -183,6 +187,7 @@ public class PhonebookGUI {
 		
 // REMOVE BUTTON
 		
+		// this will remove any selected row and all other rows that have the same first and last name
 		JButton btnNewButton_3 = new JButton("Remove");
 		panel_3.add(btnNewButton_3);
 		btnNewButton_3.addActionListener(new ActionListener(){
@@ -209,6 +214,8 @@ public class PhonebookGUI {
 
 // CHANGE BUTTON
 		
+		// this will bring up a new window with the info of the selected row and then update any changes made
+		// KNOWN PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
 		JButton btnNewButton_4 = new JButton("Change");
 		btnNewButton_4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent a){
