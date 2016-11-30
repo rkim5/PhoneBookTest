@@ -168,9 +168,9 @@ public class PhonebookGUI {
 					String sql = "INSERT INTO data(First,Last,Number) VALUES(?,?,?)";	//adding input info from add box to database
 					public void actionPerformed(ActionEvent a){
 						String fname, lname, number;
-						if (textbox.getText().equals("")){fname = "NoFirst";}
+						if (textbox.getText().equals("")){fname = "No First";}
 						else{fname = textbox.getText();}
-						if(textbox1.getText().equals("")){lname = "NoLast";}
+						if(textbox1.getText().equals("")){lname = "No Last";}
 						else{lname = textbox1.getText();}
 						if(textbox2.getText().equals("")){number = "0000000000";}
 						else{number = textbox2.getText();}
@@ -202,11 +202,11 @@ public class PhonebookGUI {
 				int selectedRowIndex = table.getSelectedRow();
 				String selectedRow = (String) table.getModel().getValueAt(selectedRowIndex,0);
 				Scanner console = new Scanner(selectedRow);
-				String First = console.next();
+				String First = console.nextLine();
 				console.close();
 				String selectedRow2 = (String) table.getModel().getValueAt(selectedRowIndex,1);
 				Scanner console2 = new Scanner(selectedRow2);
-				String Last = console2.next();
+				String Last = console2.nextLine();
 				console2.close();
 				String selectedRow3 = (String) table.getModel().getValueAt(selectedRowIndex,2);
 				Scanner console3 = new Scanner(selectedRow3);
@@ -235,11 +235,11 @@ public class PhonebookGUI {
 				int selectedRowIndex = table.getSelectedRow();
 				String selectedRow = (String) table.getModel().getValueAt(selectedRowIndex,0);
 				Scanner console = new Scanner(selectedRow);
-				String First = console.next();
+				String First = console.nextLine();
 				console.close();
 				String selectedRow1 = (String) table.getModel().getValueAt(selectedRowIndex,1);
 				Scanner console1 = new Scanner(selectedRow1);
-				String Last = console1.next();
+				String Last = console1.nextLine();
 				console1.close();
 				String selectedRow2 = (String) table.getModel().getValueAt(selectedRowIndex,2);
 				Scanner console2 = new Scanner(selectedRow2);
