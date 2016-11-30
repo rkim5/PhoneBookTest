@@ -168,9 +168,9 @@ public class PhonebookGUI {
 					String sql = "INSERT INTO data(First,Last,Number) VALUES(?,?,?)";	//adding input info from add box to database
 					public void actionPerformed(ActionEvent a){
 						String fname, lname, number;
-						if (textbox.getText().equals("")){fname = "No First";}
+						if (textbox.getText().equals("")){fname = "NoFirst";}
 						else{fname = textbox.getText();}
-						if(textbox1.getText().equals("")){lname = "No Last";}
+						if(textbox1.getText().equals("")){lname = "NoLast";}
 						else{lname = textbox1.getText();}
 						if(textbox2.getText().equals("")){number = "0000000000";}
 						else{number = textbox2.getText();}
