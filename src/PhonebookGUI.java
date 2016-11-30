@@ -57,7 +57,7 @@ public class PhonebookGUI {
 	private void initialize() {
 		
 		// this creates a new database if an existing one is not found like when first opening the jar file
-		String start = "CREATE TABLE IF NOT EXISTS 'data' ('First' TEXT DEFAULT (null) ,'Last' TEXT DEFAULT (null) ,'Number' INTEGER DEFAULT (null) )";
+		String start = "CREATE TABLE IF NOT EXISTS 'data' ('First' TEXT DEFAULT (null) ,'Last' TEXT DEFAULT (null) ,'Number' TEXT DEFAULT (null) )";
 		PreparedStatement create;
 		try {
 			create = conn.prepareStatement(start);
@@ -79,15 +79,16 @@ public class PhonebookGUI {
 		panel_1.add(textField);
 		
 		// action for the search box
-		// CURRENTLY ONLY WORKS WITH FIRST NAMES
+		// FIXED : NOW WORKS WITH ANY FIRST, LAST, NUMBER MATCH
 		// Searched for name has to be an exact match!
 		JButton btnNewButton = new JButton("Search");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {	
-				try(PreparedStatement pst = conn.prepareStatement("SELECT * FROM data WHERE First LIKE '"+textField.getText()+"'")){
+				try(PreparedStatement pst = conn.prepareStatement("SELECT * FROM data WHERE First LIKE '"+textField.getText()+"' OR Last LIKE '"+textField.getText()+"' OR Number LIKE '"+textField.getText()+"'")){
 					ResultSet rs = pst.executeQuery();
 					table.setModel(DbUtils.resultSetToTableModel(rs));
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -133,7 +134,7 @@ public class PhonebookGUI {
 		frame.getContentPane().add(panel_3, BorderLayout.SOUTH);
 		
 // ADD BUTTON
-		// KNOWN PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
+		// FIXED PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
 		JButton btnNewButton_2 = new JButton("Add");
 		panel_3.add(btnNewButton_2);
 		btnNewButton_2.addActionListener(new ActionListener(){
@@ -166,17 +167,23 @@ public class PhonebookGUI {
 				button.addActionListener(new ActionListener(){
 					String sql = "INSERT INTO data(First,Last,Number) VALUES(?,?,?)";	//adding input info from add box to database
 					public void actionPerformed(ActionEvent a){
-						String fname = textbox.getText();
-						String lname = textbox1.getText();
-						Float number = Float.parseFloat(textbox2.getText());
+						String fname, lname, number;
+						if (textbox.getText().equals("")){fname = "No First";}
+						else{fname = textbox.getText();}
+						if(textbox1.getText().equals("")){lname = "No Last";}
+						else{lname = textbox1.getText();}
+						if(textbox2.getText().equals("")){number = "0000000000";}
+						else{number = textbox2.getText();}
+						if (number.length() == 10 && number.matches("\\d+")){			//checks if the number input is 10 digits
 						try(PreparedStatement pst = conn.prepareStatement(sql)){
 							pst.setString(1,fname);
 							pst.setString(2, lname);
-							pst.setFloat(3, number);
+							pst.setString(3, number);
 							pst.executeUpdate();
 							pst.close();
 						} catch(SQLException e){
 							e.printStackTrace();
+						}
 						}
 						dialog.setVisible(false);	
 						refreshTable();											//end of input to database
@@ -201,7 +208,11 @@ public class PhonebookGUI {
 				Scanner console2 = new Scanner(selectedRow2);
 				String Last = console2.next();
 				console2.close();
-				String sql = "DELETE FROM data WHERE First='"+First+"' AND Last='"+Last+"'";	
+				String selectedRow3 = (String) table.getModel().getValueAt(selectedRowIndex,2);
+				Scanner console3 = new Scanner(selectedRow3);
+				String Number = console3.next();
+				console3.close();
+				String sql = "DELETE FROM data WHERE First='"+First+"' AND Last='"+Last+"' AND Number='"+Number+"'";	
 					try(PreparedStatement pst = conn.prepareStatement(sql)){
 						pst.executeUpdate();
 						pst.close();
@@ -215,7 +226,7 @@ public class PhonebookGUI {
 // CHANGE BUTTON
 		
 		// this will bring up a new window with the info of the selected row and then update any changes made
-		// KNOWN PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
+		// FIXED PROBLEM: currently phone numbers starting with a 1 (1XXXXXXXXX) do not work due to type issues
 		JButton btnNewButton_4 = new JButton("Change");
 		btnNewButton_4.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent a){
@@ -230,9 +241,8 @@ public class PhonebookGUI {
 				Scanner console1 = new Scanner(selectedRow1);
 				String Last = console1.next();
 				console1.close();
-				Long selectedRow2 = (Long) table.getModel().getValueAt(selectedRowIndex,2);
-				String temp = ""+selectedRow2;
-				Scanner console2 = new Scanner(temp);
+				String selectedRow2 = (String) table.getModel().getValueAt(selectedRowIndex,2);
+				Scanner console2 = new Scanner(selectedRow2);
 				String Number = console2.next();
 				console2.close();
 				
@@ -270,16 +280,17 @@ public class PhonebookGUI {
 
 							String fname = textbox.getText();
 							String lname = textbox1.getText();
-							Float number = Float.parseFloat(textbox2.getText());
+							String number = textbox2.getText();
 							String sql = "UPDATE data SET First='"+fname+"', Last='"+lname+"', Number='"+number+"' WHERE First='"+First+"'";	
 							System.out.println(sql);
+							if (number.length() == 10 && number.matches("\\d+")){			//checks if the number input is 10 digits
 							try(PreparedStatement pst = conn.prepareStatement(sql)){
 								pst.executeUpdate();
 								pst.close();
 							} catch(SQLException e){
 								e.printStackTrace();
 							}
-						
+							}
 						dialog.setVisible(false);
 						refreshTable();
 					}
